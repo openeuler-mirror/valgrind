@@ -12,8 +12,8 @@
 %endif
 
 Name:           valgrind
-Version:        3.13.0
-Release:        29
+Version:        3.15.0
+Release:        1
 Epoch:          1
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
@@ -23,30 +23,6 @@ Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
 Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
 Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
 Patch3:         valgrind-3.9.0-ldso-supp.patch
-Patch4:         valgrind-3.13.0-ppc64-check-no-vsx.patch
-Patch5:         valgrind-3.13.0-epoll_pwait.patch
-Patch6:         valgrind-3.13.0-ppc64-diag.patch
-Patch7:         valgrind-3.13.0-arm64-hwcap.patch
-Patch8:         valgrind-3.13.0-arm-index-hardwire.patch
-Patch9:         valgrind-3.13.0-ucontext_t.patch
-Patch10:        valgrind-3.13.0-gdb-8-testfix.patch
-Patch11:        valgrind-3.13.0-disable-vgdb-child.patch
-Patch12:        valgrind-3.13.0-xml-socket.patch
-Patch13:        valgrind-3.13.0-ppc64-vex-fixes.patch
-Patch14:        valgrind-3.13.0-amd64-eflags-tests.patch
-Patch15:        valgrind-3.13.0-suppress-dl-trampoline-sse-avx.patch
-Patch16:        valgrind-3.13.0-static-tls.patch
-Patch17:        valgrind-3.13.0-ppc64-timebase.patch
-Patch18:        valgrind-3.13.0-debug-alt-file.patch
-Patch19:        valgrind-3.13.0-s390-cgijnl.patch
-Patch20:        valgrind-3.13.0-ppc64-mtfprwa-constraint.patch
-Patch21:        valgrind-3.13.0-build-id-phdrs.patch
-Patch22:        valgrind-3.13.0-arm64-ptrace.patch
-Patch23:        valgrind-3.13.0-ld-separate-code.patch
-Patch24:        valgrind-3.13.0-arch_prctl.patch
-Patch25:        valgrind-3.13.0-x86-arch_prctl.patch
-Patch26:        valgrind-3.13.0-ppc64-xsmaxcdp.patch
-Patch27:        valgrind-3.13.0-utime.patch
 
 BuildRequires:  glibc glibc-devel gdb procps gcc-c++ perl(Getopt::Long)
 
@@ -111,6 +87,7 @@ popd
 %if "%{arch_old_val}" != ""
 %{_libdir}/%{name}/vgpreload*-%{arch_old_val}-*so
 %endif
+%{_libexecdir}/valgrind/*
 
 %files devel
 %{_includedir}/%{name}
@@ -121,5 +98,8 @@ popd
 %{_mandir}/man1/*
 
 %changelog
+* Wed Feb 3 2021 wangjie<wangjie294@huawei.com> - 3.15.0-1
+- upgrade 3.15.0
+
 * Sat Dec 7 2019 openEuler Buildteam <buildteam@openeuler.org> - 3.13.0-29
 - Package init
