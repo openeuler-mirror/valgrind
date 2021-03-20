@@ -1,0 +1,25 @@
+From f74a108c1ffd26a68ff6dc8952863d7aa5f01665 Mon Sep 17 00:00:00 2001
+From: caodongxia <315816521@qq.com>
+Date: Sat, 20 Mar 2021 18:31:09 +0800
+Subject: [PATCH] d
+
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 1c9ad2f..20c43b6 100755
+--- a/configure
++++ b/configure
+@@ -1129,7 +1129,7 @@ psdir='${docdir}'
+ libdir='${exec_prefix}/lib'
+ localedir='${datarootdir}/locale'
+ mandir='${datarootdir}/man'
+-
++LDFLAGS="-Wl,-z,relro,-z,now -fPIE"
+ ac_prev=
+ ac_dashdash=
+ for ac_option
+-- 
+2.27.0
+

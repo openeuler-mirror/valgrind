@@ -13,7 +13,7 @@
 
 Name:           valgrind
 Version:        3.15.0
-Release:        1
+Release:        2
 Epoch:          1
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
@@ -23,7 +23,7 @@ Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
 Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
 Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
 Patch3:         valgrind-3.9.0-ldso-supp.patch
-
+Patch4:         valgrind-add-safe-compile-options.patch
 BuildRequires:  glibc glibc-devel gdb procps gcc-c++ perl(Getopt::Long)
 
 %description
@@ -98,6 +98,9 @@ popd
 %{_mandir}/man1/*
 
 %changelog
+* Fri Mar 19 2021 caodongxia <caodongxia@huawei.com> - 3.15.0-2
+- Add safe compile options
+
 * Wed Feb 3 2021 wangjie<wangjie294@huawei.com> - 3.15.0-1
 - upgrade 3.15.0
 
