@@ -12,7 +12,7 @@
 %endif
 
 Name:           valgrind
-Version:        3.15.0
+Version:        3.16.0
 Release:        1
 Epoch:          1
 Summary:        An instrumentation framework for building dynamic analysis tools
@@ -98,6 +98,9 @@ popd
 %{_mandir}/man1/*
 
 %changelog
+* Mon Aug 02 2021 shixuantong <shixuantong@huawei.com> - 3.16.0-1
+- upgrade version to 3.16.0
+
 * Wed Feb 3 2021 wangjie<wangjie294@huawei.com> - 3.15.0-1
 - upgrade 3.15.0
 
