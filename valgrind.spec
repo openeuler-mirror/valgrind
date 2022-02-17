@@ -10,19 +10,33 @@
 %define arch_val arm64
 %define arch_old_val %{nil}
 %endif
+%ifarch riscv64
+%define arch_val riscv64
+%define arch_old_val %{nil}
+%endif
 
 Name:           valgrind
+%ifarch riscv64
+Version:        3.18.1
+%else
 Version:        3.16.0
+%endif
 Release:        1
-Epoch:          1
+Epoch:          2
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
 URL:            http://www.valgrind.org/
+%ifarch riscv64
+Source0:        valgrind-riscv64.tar.gz
+%else
 Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
+%endif
 
+%ifnarch riscv64
 Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
 Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
 Patch3:         valgrind-3.9.0-ldso-supp.patch
+%endif
 
 BuildRequires:  glibc glibc-devel gdb procps gcc-c++ perl(Getopt::Long)
 
@@ -41,7 +55,11 @@ This files contains the development files for %{name}.
 %package_help
 
 %prep
+%ifarch riscv64
+%autosetup -n %{name}-riscv64 -p1
+%else
 %autosetup -n %{name}-%{version} -p1
+%endif
 
 %build
 CC=gcc
@@ -55,11 +73,18 @@ CC="gcc -B `pwd`/shared/libgcc/"
 %undefine _hardened_build
 %undefine _strict_symbol_defs_build
 OPTFLAGS="`echo " %{optflags} " | sed 's/ -m\(64\|3[21]\) / /g;s/ -fexceptions / /g;s/ -fstack-protector\([-a-z]*\) / / g;s/ -Wp,-D_FORTIFY_SOURCE=2 / /g;s/ -O2 / /g;s/ -mcpu=\([a-z0-9]\+\) / /g;s/^ //;s/ $//'`"
+%ifarch riscv64
+./autogen.sh
+%endif
 %configure CC="$CC" CFLAGS="$OPTFLAGS" CXXFLAGS="$OPTFLAGS" --with-mpicc=/bin/false GDB=%{_bindir}/gdb
 %make_build
 
 %install
+%ifarch riscv64
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%else
 %make_install
+%endif
 
 pushd %{buildroot}%{_libdir}/valgrind/
 rm -f *.supp.in *.a
@@ -78,12 +103,16 @@ popd
 
 %files
 %license COPYING AUTHORS
+%ifnarch riscv64
 %doc %{_datadir}/doc/%{name}/{html,*.pdf}
 %exclude %{_datadir}/doc/%{name}/*.ps
+%endif
 %{_bindir}/*
 %dir %{_libdir}/%{name}
+%ifnarch riscv64
 %{_libdir}/%{name}/*[^ao]
 %attr(0755,root,root) %{_libdir}/valgrind/vgpreload*-%{arch_val}-*so
+%endif
 %if "%{arch_old_val}" != ""
 %{_libdir}/%{name}/vgpreload*-%{arch_old_val}-*so
 %endif
@@ -95,9 +124,14 @@ popd
 
 %files help
 %doc NEWS README_*
+%ifnarch riscv64
 %{_mandir}/man1/*
+%endif
 
 %changelog
+* Thu Feb 17 2022 YukariChiba <i@0x7f.cc> - 3.16.0-2
+- Add a supported version for RISC-V.
+
 * Mon Aug 02 2021 shixuantong <shixuantong@huawei.com> - 3.16.0-1
 - upgrade version to 3.16.0
 
