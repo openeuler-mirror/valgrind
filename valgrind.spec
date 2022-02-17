@@ -27,16 +27,17 @@ Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
 URL:            http://www.valgrind.org/
 %ifarch riscv64
+# A RISC-V fork, recompressed from https://github.com/petrpavlu/valgrind-riscv64/tree/1b6359bf61d38eeb1a4651527e654d40d15c4dc7
 Source0:        valgrind-riscv64.tar.gz
 %else
 Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
 %endif
 
-%ifnarch riscv64
 Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
+%ifnarch riscv64
 Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
-Patch3:         valgrind-3.9.0-ldso-supp.patch
 %endif
+Patch3:         valgrind-3.9.0-ldso-supp.patch
 
 BuildRequires:  glibc glibc-devel gdb procps gcc-c++ perl(Getopt::Long)
 
@@ -131,6 +132,7 @@ popd
 %changelog
 * Thu Feb 17 2022 YukariChiba <i@0x7f.cc> - 3.16.0-2
 - Add a supported version for RISC-V.
+- The supported version is from https://github.com/petrpavlu/valgrind-riscv64 with commit `1b6359bf61d38eeb1a4651527e654d40d15c4dc7`
 
 * Mon Aug 02 2021 shixuantong <shixuantong@huawei.com> - 3.16.0-1
 - upgrade version to 3.16.0
