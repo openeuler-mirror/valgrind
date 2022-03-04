@@ -1,0 +1,203 @@
+From 64c0d0ffbe9ee5c1c4399bc998a2602c0848b70b Mon Sep 17 00:00:00 2001
+From: Mark Wielaard <mark@klomp.org>
+Date: Wed, 2 Mar 2022 21:07:09 -0500
+Subject: [PATCH] valgrind: Implement linux rseq syscall as ENOSYS
+
+This implements rseq for amd64, arm, arm64, ppc32, ppc64,
+s390x and x86 linux as ENOSYS (without warning).
+
+glibc will start using rseq to accelerate sched_getcpu, if
+available. This would cause a warning from valgrind every
+time a new thread is started.
+
+Real rseq (restartable sequences) support is pretty hard, so
+for now just explicitly return ENOSYS (just like we do for clone3).
+
+https://sourceware.org/pipermail/libc-alpha/2021-December/133656.html
+
+-----
+conflicts:
+  context conflicts
+---
+ coregrind/m_syswrap/syswrap-amd64-linux.c | 2 ++
+ coregrind/m_syswrap/syswrap-arm-linux.c   | 1 +
+ coregrind/m_syswrap/syswrap-arm64-linux.c | 4 +++-
+ coregrind/m_syswrap/syswrap-ppc32-linux.c | 2 ++
+ coregrind/m_syswrap/syswrap-ppc64-linux.c | 3 +++
+ coregrind/m_syswrap/syswrap-s390x-linux.c | 3 +++
+ coregrind/m_syswrap/syswrap-x86-linux.c   | 2 ++
+ include/vki/vki-scnums-arm-linux.h        | 1 +
+ include/vki/vki-scnums-arm64-linux.h      | 4 +++-
+ include/vki/vki-scnums-ppc32-linux.h      | 1 +
+ include/vki/vki-scnums-ppc64-linux.h      | 1 +
+ include/vki/vki-scnums-s390x-linux.h      | 5 ++++-
+ 12 files changed, 26 insertions(+), 3 deletions(-)
+
+diff --git a/coregrind/m_syswrap/syswrap-amd64-linux.c b/coregrind/m_syswrap/syswrap-amd64-linux.c
+index d0d7efa..5cd630f 100644
+--- a/coregrind/m_syswrap/syswrap-amd64-linux.c
++++ b/coregrind/m_syswrap/syswrap-amd64-linux.c
+@@ -862,6 +862,8 @@ static SyscallTableEntry syscall_table[] = {
+ 
+    LINXY(__NR_statx,             sys_statx),             // 332
+ 
++   GENX_(__NR_rseq,              sys_ni_syscall),        // 334
++
+    LINX_(__NR_membarrier,        sys_membarrier),        // 324
+ 
+    LINX_(__NR_copy_file_range,   sys_copy_file_range),   // 326
+diff --git a/coregrind/m_syswrap/syswrap-arm-linux.c b/coregrind/m_syswrap/syswrap-arm-linux.c
+index ea703e3..8dbe3bc 100644
+--- a/coregrind/m_syswrap/syswrap-arm-linux.c
++++ b/coregrind/m_syswrap/syswrap-arm-linux.c
+@@ -1020,6 +1020,7 @@ static SyscallTableEntry syscall_main_table[] = {
+    LINX_(__NR_pwritev2,          sys_pwritev2),         // 393
+ 
+    LINXY(__NR_statx,             sys_statx),            // 397
++   GENX_(__NR_rseq,              sys_ni_syscall),       // 398
+ 
+    LINXY(__NR_clock_gettime64,   sys_clock_gettime64),  // 403
+    LINX_(__NR_clock_settime64,   sys_clock_settime64),  // 404
+diff --git a/coregrind/m_syswrap/syswrap-arm64-linux.c b/coregrind/m_syswrap/syswrap-arm64-linux.c
+index 9a9a1f9..76e14fa 100644
+--- a/coregrind/m_syswrap/syswrap-arm64-linux.c
++++ b/coregrind/m_syswrap/syswrap-arm64-linux.c
+@@ -823,8 +823,10 @@ static SyscallTableEntry syscall_main_table[] = {
+    //   (__NR_pkey_mprotect,     sys_ni_syscall),        // 288
+    //   (__NR_pkey_alloc,        sys_ni_syscall),        // 289
+    //   (__NR_pkey_free,         sys_ni_syscall),        // 290
++   LINXY(__NR_statx,             sys_statx),             // 291
++
++   GENX_(__NR_rseq,              sys_ni_syscall),        // 293
+ 
+-   LINXY(__NR_statx,             sys_statx),             // 397
+    GENX_(__NR_clone3,            sys_ni_syscall),        // 435
+ };
+ 
+diff --git a/coregrind/m_syswrap/syswrap-ppc32-linux.c b/coregrind/m_syswrap/syswrap-ppc32-linux.c
+index 260b8b4..f07fb8e 100644
+--- a/coregrind/m_syswrap/syswrap-ppc32-linux.c
++++ b/coregrind/m_syswrap/syswrap-ppc32-linux.c
+@@ -1023,6 +1023,8 @@ static SyscallTableEntry syscall_table[] = {
+ 
+    LINXY(__NR_statx,             sys_statx),            // 383
+ 
++   GENX_(__NR_rseq,              sys_ni_syscall),       // 387
++
+    LINXY(__NR_clock_gettime64,   sys_clock_gettime64),  // 403
+    LINX_(__NR_clock_settime64,   sys_clock_settime64),  // 404
+ 
+diff --git a/coregrind/m_syswrap/syswrap-ppc64-linux.c b/coregrind/m_syswrap/syswrap-ppc64-linux.c
+index f29f0a2..106b56c 100644
+--- a/coregrind/m_syswrap/syswrap-ppc64-linux.c
++++ b/coregrind/m_syswrap/syswrap-ppc64-linux.c
+@@ -1010,6 +1010,9 @@ static SyscallTableEntry syscall_table[] = {
+    LINX_(__NR_pwritev2,          sys_pwritev2),         // 381
+ 
+    LINXY(__NR_statx,             sys_statx),            // 383
++
++   GENX_(__NR_rseq,              sys_ni_syscall),       // 387
++
+    GENX_(__NR_clone3,            sys_ni_syscall),        // 435
+ };
+ 
+diff --git a/coregrind/m_syswrap/syswrap-s390x-linux.c b/coregrind/m_syswrap/syswrap-s390x-linux.c
+index e0c0d5d..9756d23 100644
+--- a/coregrind/m_syswrap/syswrap-s390x-linux.c
++++ b/coregrind/m_syswrap/syswrap-s390x-linux.c
+@@ -857,6 +857,9 @@ static SyscallTableEntry syscall_table[] = {
+    LINX_(__NR_pwritev2, sys_pwritev2),                                // 377
+ 
+    LINXY(__NR_statx, sys_statx),                                      // 379
++
++   GENX_(__NR_rseq, sys_ni_syscall),                                  // 381
++
+    GENX_(__NR_clone3, sys_ni_syscall),                                // 435
+ };
+ 
+diff --git a/coregrind/m_syswrap/syswrap-x86-linux.c b/coregrind/m_syswrap/syswrap-x86-linux.c
+index d432e32..d29f82c 100644
+--- a/coregrind/m_syswrap/syswrap-x86-linux.c
++++ b/coregrind/m_syswrap/syswrap-x86-linux.c
+@@ -1618,6 +1618,8 @@ static SyscallTableEntry syscall_table[] = {
+    /* Explicitly not supported on i386 yet. */
+    GENX_(__NR_arch_prctl,        sys_ni_syscall),       // 384
+ 
++   GENX_(__NR_rseq,              sys_ni_syscall),       // 386
++
+    LINXY(__NR_clock_gettime64,   sys_clock_gettime64),  // 403
+    LINX_(__NR_clock_settime64,   sys_clock_settime64),  // 404
+ 
+diff --git a/include/vki/vki-scnums-arm-linux.h b/include/vki/vki-scnums-arm-linux.h
+index ff560e1..485db8b 100644
+--- a/include/vki/vki-scnums-arm-linux.h
++++ b/include/vki/vki-scnums-arm-linux.h
+@@ -432,6 +432,7 @@
+ #define __NR_pkey_alloc                 395
+ #define __NR_pkey_free                  396
+ #define __NR_statx                      397
++#define __NR_rseq                       398
+ 
+ 
+ 
+diff --git a/include/vki/vki-scnums-arm64-linux.h b/include/vki/vki-scnums-arm64-linux.h
+index 9aa3b2b..acdfb39 100644
+--- a/include/vki/vki-scnums-arm64-linux.h
++++ b/include/vki/vki-scnums-arm64-linux.h
+@@ -323,9 +323,11 @@
+ #define __NR_pkey_alloc 289
+ #define __NR_pkey_free 290
+ #define __NR_statx 291
++#define __NR_io_pgetevents 291
++#define __NR_rseq 293
+ 
+ #undef __NR_syscalls
+-#define __NR_syscalls 292
++#define __NR_syscalls 294
+ 
+ ///*
+ // * All syscalls below here should go away really,
+diff --git a/include/vki/vki-scnums-ppc32-linux.h b/include/vki/vki-scnums-ppc32-linux.h
+index 6987ad9..08fa77d 100644
+--- a/include/vki/vki-scnums-ppc32-linux.h
++++ b/include/vki/vki-scnums-ppc32-linux.h
+@@ -415,6 +415,7 @@
+ #define __NR_pkey_alloc		384
+ #define __NR_pkey_free		385
+ #define __NR_pkey_mprotect	386
++#define __NR_rseq		387
+ 
+ #endif /* __VKI_SCNUMS_PPC32_LINUX_H */
+ 
+diff --git a/include/vki/vki-scnums-ppc64-linux.h b/include/vki/vki-scnums-ppc64-linux.h
+index 6827964..507117b 100644
+--- a/include/vki/vki-scnums-ppc64-linux.h
++++ b/include/vki/vki-scnums-ppc64-linux.h
+@@ -407,6 +407,7 @@
+ #define __NR_pkey_alloc		384
+ #define __NR_pkey_free		385
+ #define __NR_pkey_mprotect	386
++#define __NR_pkey_rseq		387
+ 
+ #endif /* __VKI_SCNUMS_PPC64_LINUX_H */
+ 
+diff --git a/include/vki/vki-scnums-s390x-linux.h b/include/vki/vki-scnums-s390x-linux.h
+index f386170..51cc572 100644
+--- a/include/vki/vki-scnums-s390x-linux.h
++++ b/include/vki/vki-scnums-s390x-linux.h
+@@ -340,8 +340,11 @@
+ #define __NR_s390_guarded_storage	378
+ #define __NR_statx			379
+ #define __NR_s390_sthyi			380
++#define __NR_kexec_file_load		381
++#define __NR_io_pgetevents		382
++#define __NR_rseq			383
+ 
+-#define NR_syscalls 381
++#define NR_syscalls 384
+ 
+ /* 
+  * There are some system calls that are not present on 64 bit, some
+-- 
+2.27.0
+
