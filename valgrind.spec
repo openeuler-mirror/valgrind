@@ -13,7 +13,7 @@
 
 Name:           valgrind
 Version:        3.16.0
-Release:        1
+Release:        2
 Epoch:          1
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
@@ -23,6 +23,7 @@ Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
 Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
 Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
 Patch3:         valgrind-3.9.0-ldso-supp.patch
+Patch4:         backport-Generate-a-ENOSYS-sys_ni_syscall-for-clone3-on-all-linux-arches.patch
 
 BuildRequires:  glibc glibc-devel gdb procps gcc-c++ perl(Getopt::Long)
 
@@ -98,6 +99,9 @@ popd
 %{_mandir}/man1/*
 
 %changelog
+* Wed Feb 09 2022 gaoxingwang <gaoxingwang@huawei.com> - 3.16.0-2
+- backport patch :Generate a ENOSYS (sys_ni_syscall) for clone3 on all linux arches
+
 * Mon Aug 02 2021 shixuantong <shixuantong@huawei.com> - 3.16.0-1
 - upgrade version to 3.16.0
 
