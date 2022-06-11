@@ -18,16 +18,18 @@
 Name:           valgrind
 %ifarch riscv64
 Version:        3.18.1
+Release:	2
+Epoch:		2
 %else
 Version:        3.16.0
-%endif
 Release:        1
-Epoch:          2
+Epoch:          1
+%endif
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
 URL:            http://www.valgrind.org/
 %ifarch riscv64
-# A RISC-V fork, recompressed from https://github.com/petrpavlu/valgrind-riscv64/tree/1b6359bf61d38eeb1a4651527e654d40d15c4dc7
+# A RISC-V fork, recompressed from https://github.com/petrpavlu/valgrind-riscv64/tree/5042a918964cab78f2603c87166f9987f927a875
 Source0:        valgrind-riscv64.tar.gz
 %else
 Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
@@ -57,7 +59,7 @@ This files contains the development files for %{name}.
 
 %prep
 %ifarch riscv64
-%autosetup -n %{name}-riscv64 -p1
+%autosetup -n %{name}-riscv64-riscv64-linux -p1
 %else
 %autosetup -n %{name}-%{version} -p1
 %endif
@@ -102,6 +104,13 @@ pushd %{buildroot}%{_includedir}/%{name}
 rm -rf config.h libvex*h pub_tool_*h vki/
 popd
 
+%ifarch riscv64
+pushd %{buildroot}%{_libexecdir}/%{name}
+mv ./* %{buildroot}%{_libdir}/%{name}
+mv %{buildroot}%{_libdir}/%{name}/dh_view* ./
+popd
+%endif
+
 %files
 %license COPYING AUTHORS
 %ifnarch riscv64
@@ -110,14 +119,12 @@ popd
 %endif
 %{_bindir}/*
 %dir %{_libdir}/%{name}
-%ifnarch riscv64
 %{_libdir}/%{name}/*[^ao]
 %attr(0755,root,root) %{_libdir}/valgrind/vgpreload*-%{arch_val}-*so
-%endif
 %if "%{arch_old_val}" != ""
 %{_libdir}/%{name}/vgpreload*-%{arch_old_val}-*so
 %endif
-%{_libexecdir}/valgrind/*
+%{_libexecdir}/%{name}/*
 
 %files devel
 %{_includedir}/%{name}
@@ -130,6 +137,10 @@ popd
 %endif
 
 %changelog
+* Sat Jun 11 2022 YukariChiba <i@0x7f.cc> - 3.18.1-2
+- Upgrade RISC-V version.
+- Move RISC-V files to correct path.
+
 * Thu Feb 17 2022 YukariChiba <i@0x7f.cc> - 3.16.0-2
 - Add a supported version for RISC-V.
 - The supported version is from https://github.com/petrpavlu/valgrind-riscv64 with commit `1b6359bf61d38eeb1a4651527e654d40d15c4dc7`
