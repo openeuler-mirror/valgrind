@@ -18,7 +18,7 @@
 Name:           valgrind
 %ifarch riscv64
 Version:        3.18.1
-Release:	2
+Release:	3
 Epoch:		2
 %else
 Version:        3.16.0
@@ -38,6 +38,8 @@ Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
 Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
 %ifnarch riscv64
 Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
+%else
+Patch2:         fix-riscv64-special-instruction-preambles.patch
 %endif
 Patch3:         valgrind-3.9.0-ldso-supp.patch
 
@@ -137,6 +139,9 @@ popd
 %endif
 
 %changelog
+* Mon Jul 04 2022 laokz <laokz@foxmail.com> - 3.18.1-3
+- Fix RISC-V special instruction preambles.
+
 * Sat Jun 11 2022 YukariChiba <i@0x7f.cc> - 3.18.1-2
 - Upgrade RISC-V version.
 - Move RISC-V files to correct path.
