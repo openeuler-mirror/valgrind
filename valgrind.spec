@@ -18,7 +18,7 @@
 Name:           valgrind
 %ifarch riscv64
 Version:        3.18.1
-Release:	3
+Release:	4
 Epoch:		2
 %else
 Version:        3.16.0
@@ -29,7 +29,7 @@ Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
 URL:            http://www.valgrind.org/
 %ifarch riscv64
-# A RISC-V fork, recompressed from https://github.com/petrpavlu/valgrind-riscv64/tree/5042a918964cab78f2603c87166f9987f927a875
+# A RISC-V fork, recompressed from https://github.com/petrpavlu/valgrind-riscv64/tree/e595f722440c59f13b2d3f48e499a54a0c7eb09f
 Source0:        valgrind-riscv64.tar.gz
 %else
 Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
@@ -38,8 +38,6 @@ Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
 Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
 %ifnarch riscv64
 Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
-%else
-Patch2:         fix-riscv64-special-instruction-preambles.patch
 %endif
 Patch3:         valgrind-3.9.0-ldso-supp.patch
 
@@ -139,6 +137,9 @@ popd
 %endif
 
 %changelog
+* Tue Jul 26 2022 YukariChiba <i@0x7f.cc> - 3.18.1-4
+- Upgrade RISC-V version.
+
 * Mon Jul 04 2022 laokz <laokz@foxmail.com> - 3.18.1-3
 - Fix RISC-V special instruction preambles.
 
