@@ -18,7 +18,7 @@
 Name:           valgrind
 %ifarch riscv64
 Version:        3.18.1
-Release:	4
+Release:	5
 Epoch:		2
 %else
 Version:        3.16.0
@@ -29,17 +29,17 @@ Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
 URL:            http://www.valgrind.org/
 %ifarch riscv64
-# A RISC-V fork, recompressed from https://github.com/petrpavlu/valgrind-riscv64/tree/e595f722440c59f13b2d3f48e499a54a0c7eb09f
+# A RISC-V fork, recompressed from https://github.com/petrpavlu/valgrind-riscv64/tree/600df2ed0518d6bec31c776fab579543f3e621e9
 Source0:        valgrind-riscv64.tar.gz
 %else
 Source0:        ftp://sourceware.org/pub/%{name}/%{name}-%{version}.tar.bz2
 %endif
 
-Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
 %ifnarch riscv64
+Patch1:         valgrind-3.9.0-cachegrind-improvements.patch
 Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
-%endif
 Patch3:         valgrind-3.9.0-ldso-supp.patch
+%endif
 
 BuildRequires:  glibc glibc-devel gdb procps gcc-c++ perl(Getopt::Long)
 
@@ -59,7 +59,7 @@ This files contains the development files for %{name}.
 
 %prep
 %ifarch riscv64
-%autosetup -n %{name}-riscv64-riscv64-linux -p1
+%autosetup -n %{name}-riscv64 -p1
 %else
 %autosetup -n %{name}-%{version} -p1
 %endif
@@ -104,13 +104,6 @@ pushd %{buildroot}%{_includedir}/%{name}
 rm -rf config.h libvex*h pub_tool_*h vki/
 popd
 
-%ifarch riscv64
-pushd %{buildroot}%{_libexecdir}/%{name}
-mv ./* %{buildroot}%{_libdir}/%{name}
-mv %{buildroot}%{_libdir}/%{name}/dh_view* ./
-popd
-%endif
-
 %files
 %license COPYING AUTHORS
 %ifnarch riscv64
@@ -119,8 +112,10 @@ popd
 %endif
 %{_bindir}/*
 %dir %{_libdir}/%{name}
+%ifnarch riscv64
 %{_libdir}/%{name}/*[^ao]
 %attr(0755,root,root) %{_libdir}/valgrind/vgpreload*-%{arch_val}-*so
+%endif
 %if "%{arch_old_val}" != ""
 %{_libdir}/%{name}/vgpreload*-%{arch_old_val}-*so
 %endif
@@ -137,6 +132,9 @@ popd
 %endif
 
 %changelog
+* Mon Oct 17 2022 laokz <laokz@foxmail.com> - 3.18.1-5
+- Upgrade and revert install path.
+
 * Tue Jul 26 2022 YukariChiba <i@0x7f.cc> - 3.18.1-4
 - Upgrade RISC-V version.
 
