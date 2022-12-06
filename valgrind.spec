@@ -13,7 +13,7 @@
 
 Name:           valgrind
 Version:        3.16.0
-Release:        3
+Release:        4
 Epoch:          1
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
@@ -56,7 +56,9 @@ CC="gcc -B `pwd`/shared/libgcc/"
 
 %undefine _hardened_build
 %undefine _strict_symbol_defs_build
-OPTFLAGS="`echo " %{optflags} " | sed 's/ -m\(64\|3[21]\) / /g;s/ -fexceptions / /g;s/ -fstack-protector\([-a-z]*\) / / g;s/ -Wp,-D_FORTIFY_SOURCE=2 / /g;s/ -O2 / /g;s/ -mcpu=\([a-z0-9]\+\) / /g;s/^ //;s/ $//'`"
+optflags="`echo " %{optflags} -Wl,-z,now -fPIE -fPIC"`"
+OPTFLAGS="`echo " $optflags " | sed 's/ -m\(64\|3[21]\) / /g;s/ -fexceptions / /g;s/ -fstack-protector\([-a-z]*\) / / g;s/ -Wp,-D_FORTIFY_SOURCE=2 / /g;s/ -O2 / /g;s/ -mcpu=\([a-z0-9]\+\) / /g;s/^ //;s/ $//'`"
+
 %configure CC="$CC" CFLAGS="$OPTFLAGS" CXXFLAGS="$OPTFLAGS" --with-mpicc=/bin/false GDB=%{_bindir}/gdb
 %make_build
 
@@ -100,6 +102,9 @@ popd
 %{_mandir}/man1/*
 
 %changelog
+* Thu Aug 25 2022 liyanan <liyanan32@h-partners.com> - 1:3.16.0-4
+- Add BIND_NOW and PIE safe complie option
+
 * Wed Mar 02 2022 qinyu <qiny16@huawei.com> - 3.16.0-3
 - Implement linux rseq syscall as ENOSYS
 
