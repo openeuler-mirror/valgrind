@@ -10,10 +10,14 @@
 %define arch_val arm64
 %define arch_old_val %{nil}
 %endif
+%ifarch loongarch64
+%define arch_val loongarch64
+%define arch_old_val %{nil}
+%endif
 
 Name:           valgrind
 Version:        3.16.0
-Release:        4
+Release:        5
 Epoch:          1
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
@@ -25,6 +29,7 @@ Patch2:         valgrind-3.9.0-helgrind-race-supp.patch
 Patch3:         valgrind-3.9.0-ldso-supp.patch
 Patch4:         backport-Generate-a-ENOSYS-sys_ni_syscall-for-clone3-on-all-linux-arches.patch
 Patch5:         valgrind-Implement-linux-rseq-syscall-as-ENOSYS.patch
+Patch6:         Add-LOONGARCH64-Linux-support.patch
 
 BuildRequires:  glibc glibc-devel gdb procps gcc-c++ perl(Getopt::Long)
 
@@ -102,6 +107,9 @@ popd
 %{_mandir}/man1/*
 
 %changelog
+* Fri Dec 16 2022 chenfeiyang <chenfeiyang@loongson.cn> - 1:3.16.0-5
+- Add LOONGARCH64/Linux support
+
 * Thu Aug 25 2022 liyanan <liyanan32@h-partners.com> - 1:3.16.0-4
 - Add BIND_NOW and PIE safe complie option
 
