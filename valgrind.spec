@@ -17,7 +17,7 @@
 
 Name:           valgrind
 Version:        3.16.0
-Release:        5
+Release:        6
 Epoch:          1
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
@@ -30,6 +30,7 @@ Patch3:         valgrind-3.9.0-ldso-supp.patch
 Patch4:         backport-Generate-a-ENOSYS-sys_ni_syscall-for-clone3-on-all-linux-arches.patch
 Patch5:         valgrind-Implement-linux-rseq-syscall-as-ENOSYS.patch
 Patch6:         Add-LOONGARCH64-Linux-support.patch
+Patch7:         valgrind-Sync-LoongArch-with-glibc-2.36.patch
 
 BuildRequires:  glibc glibc-devel gdb procps gcc-c++ perl(Getopt::Long)
 
@@ -107,6 +108,9 @@ popd
 %{_mandir}/man1/*
 
 %changelog
+* Tue Jan 03 2023 chenfeiyang <chenfeiyang@loongson.cn> - 1:3.16.0-6
+- Sync LoongArch with glibc 2.36
+
 * Fri Dec 16 2022 chenfeiyang <chenfeiyang@loongson.cn> - 1:3.16.0-5
 - Add LOONGARCH64/Linux support
 
