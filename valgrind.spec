@@ -17,7 +17,7 @@
 
 Name:           valgrind
 Version:        3.16.0
-Release:        6
+Release:        7
 Epoch:          1
 Summary:        An instrumentation framework for building dynamic analysis tools
 License:        GPLv2+
@@ -52,12 +52,11 @@ This files contains the development files for %{name}.
 %autosetup -n %{name}-%{version} -p1
 
 %build
-CC=gcc
 %ifarch x86_64
 mkdir -p shared/libgcc/32
 ar r shared/libgcc/32/libgcc_s.a
 ar r shared/libgcc/libgcc_s_32.a
-CC="gcc -B `pwd`/shared/libgcc/"
+CC="$CC -B `pwd`/shared/libgcc/"
 %endif
 
 %undefine _hardened_build
@@ -108,6 +107,9 @@ popd
 %{_mandir}/man1/*
 
 %changelog
+* Thu Apr 20 2023 jammyjellyfish <jammyjellyfish255@outlook.com> - 3.16.0-7
+- Support specify CC
+
 * Tue Jan 03 2023 chenfeiyang <chenfeiyang@loongson.cn> - 1:3.16.0-6
 - Sync LoongArch with glibc 2.36
 
